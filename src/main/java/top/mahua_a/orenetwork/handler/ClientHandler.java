@@ -8,6 +8,7 @@ import io.netty.channel.socket.DatagramPacket;
 import top.mahua_a.orenetwork.tlv.InvalidPacket;
 import top.mahua_a.orenetwork.tlv.ShakeHandPacket;
 import top.mahua_a.orenetwork.util.ByteUtil;
+import top.mahua_a.orenetwork.util.PacketHelper;
 
 import java.net.InetSocketAddress;
 
@@ -23,8 +24,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<DatagramPacket> {
                 bytes[bytes.length-1]!=(byte) Integer.parseInt("03",16)
         ){
             System.out.println("无效的数据");
-            DatagramPacket reply = new DatagramPacket(Unpooled.copiedBuffer(new InvalidPacket().parse()), msg.sender());
-            ctx.writeAndFlush(reply);
+            PacketHelper.sendPacket(ctx.channel(),new InvalidPacket(),msg.sender());
             return;
         }
 
@@ -32,7 +32,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<DatagramPacket> {
         switch (ByteUtil.toHexString(cmd)){
             case "0001":
                 System.out.println(msg.sender().getAddress().getHostAddress()+":"+msg.sender().getPort());
-                ctx.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(new ShakeHandPacket().parse()), msg.sender()));
+                PacketHelper.sendPacket(ctx.channel(),new ShakeHandPacket(),msg.sender());
                 break;
             case "0002":
                 System.out.println("心跳包");
@@ -40,16 +40,12 @@ public class ClientHandler extends SimpleChannelInboundHandler<DatagramPacket> {
             case "0003":
                 System.out.println("引荐");
                 if(bytes.length<12){
-                    ctx.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(new InvalidPacket().parse()), msg.sender()));
+                    PacketHelper.sendPacket(ctx.channel(),new InvalidPacket(),msg.sender());
                     return;
                 }
                 byte[] ip_bytes=ByteUtil.readBytes(bytes,5,4);
                 byte[] port_bytes=ByteUtil.readBytes(bytes,9,2);
-                System.out.println(Integer.parseInt(ByteUtil.toHexString(port_bytes),16));
-                System.out.println(ByteUtil.bytesToip(ip_bytes));
-                ctx.writeAndFlush(
-                        new DatagramPacket(Unpooled.copiedBuffer(new ShakeHandPacket().parse()), new InetSocketAddress(ByteUtil.bytesToip(ip_bytes),Integer.parseInt(ByteUtil.toHexString(port_bytes),16)))
-                );
+                PacketHelper.sendPacket(ctx.channel(),new ShakeHandPacket(),ByteUtil.bytesToip(ip_bytes),Integer.parseInt(ByteUtil.toHexString(port_bytes),16));
                 break;
         }
     }

@@ -10,12 +10,15 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.util.CharsetUtil;
 import top.mahua_a.orenetwork.handler.ClientHandler;
+import top.mahua_a.orenetwork.node.Node;
+import top.mahua_a.orenetwork.node.NodeManager;
 
 import java.net.InetSocketAddress;
 
 public class OreNetwork {
     private Bootstrap bootstrap;
     private Channel channelFuture;
+    private NodeManager nodeManager;
     public void start(){
         EventLoopGroup group = new NioEventLoopGroup();
         try {
@@ -23,19 +26,17 @@ public class OreNetwork {
             bootstrap.group(group)
                     .channel(NioDatagramChannel.class)
                     .handler(new ClientHandler());
-            Channel ch = bootstrap.bind(1008).sync().channel();
-            channelFuture = ch;
+            channelFuture = bootstrap.bind(1008).sync().channel();
+            nodeManager=new NodeManager(channelFuture);
+            nodeManager.addNode(new Node("127.0.0.1",5438));
             channelFuture.closeFuture().await();
-
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             group.shutdownGracefully();
         }
-
     }
     public void shutdown(){
         channelFuture.close();
     }
-
 }

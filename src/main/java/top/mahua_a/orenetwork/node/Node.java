@@ -14,4 +14,12 @@ public class Node {
     public boolean isLive(){
         return System.currentTimeMillis()-lasttime<=30*1000; //30秒没有心跳则认为已死亡
     }
+
+    public int getPort() {
+        return port;
+    }
+
+    public String getAddress() {
+        return address;
+    }
 }
