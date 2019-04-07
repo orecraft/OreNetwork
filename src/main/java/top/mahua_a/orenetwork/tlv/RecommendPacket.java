@@ -2,7 +2,7 @@ package top.mahua_a.orenetwork.tlv;
 
 import top.mahua_a.orenetwork.util.ByteUtil;
 
-public class RecommendPacket implements Tlvbase{
+public class RecommendPacket implements Packet {
     private String head="3000010003";
     private String ip="";
     private String port="";

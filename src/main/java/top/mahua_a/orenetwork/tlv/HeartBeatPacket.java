@@ -2,7 +2,7 @@ package top.mahua_a.orenetwork.tlv;
 
 import top.mahua_a.orenetwork.util.ByteUtil;
 
-public class HeartBeatPacket implements Tlvbase {
+public class HeartBeatPacket implements Packet {
     private String packet = "3000001000203";
     @Override
     public byte[] parse() {

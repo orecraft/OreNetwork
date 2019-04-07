@@ -16,9 +16,9 @@ import top.mahua_a.orenetwork.node.NodeManager;
 import java.net.InetSocketAddress;
 
 public class OreNetwork {
-    private Bootstrap bootstrap;
-    private Channel channelFuture;
-    private NodeManager nodeManager;
+    private static Bootstrap bootstrap;
+    private static Channel channelFuture;
+    private static NodeManager nodeManager;
     public void start(){
         EventLoopGroup group = new NioEventLoopGroup();
         try {
@@ -38,5 +38,17 @@ public class OreNetwork {
     }
     public void shutdown(){
         channelFuture.close();
+    }
+
+    public static Bootstrap getBootstrap() {
+        return bootstrap;
+    }
+
+    public static Channel getChannel() {
+        return channelFuture;
+    }
+
+    public static NodeManager getNodeManager() {
+        return nodeManager;
     }
 }

@@ -2,7 +2,7 @@ package top.mahua_a.orenetwork.tlv;
 
 import top.mahua_a.orenetwork.util.ByteUtil;
 
-public class ShakeHandPacket implements Tlvbase{
+public class ShakeHandPacket implements Packet {
     private String head = "30";
     private String end = "03";
     private String cmd = "0001";

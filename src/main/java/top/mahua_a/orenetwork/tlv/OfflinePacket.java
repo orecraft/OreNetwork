@@ -2,7 +2,7 @@ package top.mahua_a.orenetwork.tlv;
 
 import top.mahua_a.orenetwork.util.ByteUtil;
 
-public class OfflinePacket implements Tlvbase{
+public class OfflinePacket implements Packet {
     private String packet =  "300001330003";
     @Override
     public byte[] parse() {
