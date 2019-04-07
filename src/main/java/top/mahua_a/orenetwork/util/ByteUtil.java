@@ -1,5 +1,7 @@
 package top.mahua_a.orenetwork.util;
 
+import com.sun.xml.internal.ws.util.StringUtils;
+
 import java.util.Arrays;
 
 public class ByteUtil {
@@ -123,6 +125,18 @@ public class ByteUtil {
 
         return newData;
     }
+    public static String ipToLong(String ipString) {
+        if(ipString==null||ipString.equalsIgnoreCase("")){
+            return null;
+        }
+        String[] ip=ipString.split("\\.");
+        StringBuffer sb=new StringBuffer();
+        for (String str : ip) {
+            sb.append(Integer.toHexString(Integer.parseInt(str)));
+        }
+        return sb.toString();
+    }
+
 
 
 

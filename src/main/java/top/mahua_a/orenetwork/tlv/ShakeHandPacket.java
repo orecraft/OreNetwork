@@ -13,7 +13,6 @@ public class ShakeHandPacket implements Tlvbase{
         String packet = head+version+cmd+end;
         return ByteUtil.toByteArray(packet);
     }
-
     @Override
     public String getName() {
         return "Shake hand";
