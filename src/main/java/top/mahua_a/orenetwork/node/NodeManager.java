@@ -10,10 +10,7 @@ import top.mahua_a.orenetwork.util.ByteUtil;
 import top.mahua_a.orenetwork.util.PacketHelper;
 
 import java.net.InetSocketAddress;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class NodeManager {
     private Set<Node> nodes=new HashSet<>();
@@ -23,21 +20,26 @@ public class NodeManager {
 
     public NodeManager(Channel channel){
         this.channel=channel;
+
         heartTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                for(Node node:nodes){
-
+                System.out.println("当前节点数："+nodes.size());
+                Iterator<Node> it= nodes.iterator();
+                while (it.hasNext()){
+                    Node node = it.next();
                     if(node.isLive()){
                         PacketHelper.sendPacket(channel,new HeartBeatPacket(),node.getAddress(),node.getPort());
                         //应该在接收到心跳包后，执行心跳包逻辑
                         //node.HeartBeat();
-                    }else{
-                        removeNode(node);
+                    }else {
+                        System.out.println("节点30s内无响应，此节点可能已经离线");
+                        it.remove();
                     }
                 }
             }
-        },10000);
+        },0,10000);
+
     }
     public void setMaxNode(int maxNode){
         this.maxNode=maxNode;
@@ -49,12 +51,16 @@ public class NodeManager {
             return;
             //已经存在的节点不再添加
         }
-        nodes.add(node);
+        synchronized (nodes) {
+            nodes.add(node);
+        }
         //回应对方，接受添加节点请求
 
     }
     public void removeNode(Node node){
-        nodes.remove(node);
+        synchronized(nodes) {
+            nodes.remove(node);
+        }
     }
     public Node findNode(String addr,int port){
         for(Node node:nodes){

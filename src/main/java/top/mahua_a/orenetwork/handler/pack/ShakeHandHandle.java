@@ -18,10 +18,11 @@ public class ShakeHandHandle implements PacketHandler{
         Node node= OreNetwork.getNodeManager().findNode(msg.sender().getHostString(),msg.sender().getPort());
         if(node!=null){
             //已有的节点无需握手，忽略此包
+            System.out.println("节点中已存在此包");
             return;
         }
         OreNetwork.getNodeManager().addNode(new Node(msg.sender().getHostString(),msg.sender().getPort()));
-        PacketHelper.sendPacket(ctx.channel(),new AcceptShakeHandPacket(),node.getAddress(),node.getPort());
+        PacketHelper.sendPacket(ctx.channel(),new AcceptShakeHandPacket(),msg.sender().getHostString(),msg.sender().getPort());
         //发送同意包，并添加节点
     }
 }

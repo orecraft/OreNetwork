@@ -8,7 +8,6 @@ public class AcceptShakeHandPacket implements Packet {
     public byte[] parse() {
         return ByteUtil.toByteArray(packet);
     }
-
     @Override
     public String getName() {
         return "AcceptShakeHandPacket";

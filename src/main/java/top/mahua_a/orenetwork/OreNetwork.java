@@ -10,6 +10,8 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.util.CharsetUtil;
 import top.mahua_a.orenetwork.handler.ClientHandler;
+import top.mahua_a.orenetwork.handler.pack.HeartBeatHandle;
+import top.mahua_a.orenetwork.handler.pack.ShakeHandHandle;
 import top.mahua_a.orenetwork.node.Node;
 import top.mahua_a.orenetwork.node.NodeManager;
 
@@ -19,16 +21,20 @@ public class OreNetwork {
     private static Bootstrap bootstrap;
     private static Channel channelFuture;
     private static NodeManager nodeManager;
+    private static ClientHandler clientHandler;
     public void start(){
         EventLoopGroup group = new NioEventLoopGroup();
+        clientHandler = new ClientHandler();
+        //注册包处理器
+        clientHandler.regHandler("0001",new ShakeHandHandle());
+        clientHandler.regHandler("0002",new HeartBeatHandle());
         try {
             bootstrap = new Bootstrap();
             bootstrap.group(group)
                     .channel(NioDatagramChannel.class)
-                    .handler(new ClientHandler());
+                    .handler(clientHandler);
             channelFuture = bootstrap.bind(1008).sync().channel();
             nodeManager=new NodeManager(channelFuture);
-            nodeManager.addNode(new Node("127.0.0.1",5438));
             channelFuture.closeFuture().await();
         } catch (Exception e) {
             e.printStackTrace();
