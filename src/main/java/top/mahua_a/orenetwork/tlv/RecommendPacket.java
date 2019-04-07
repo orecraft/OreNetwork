@@ -9,15 +9,17 @@ public class RecommendPacket implements Tlvbase{
     private String end="03";
     public RecommendPacket(String ip,int port){
         this.ip= ByteUtil.ipToLong(ip);
-        this.port=Integer.toHexString(port);
+        byte[] port_byte=new byte[2];
+        port_byte=ByteUtil.toByteArray(Integer.toHexString(port));
+        this.port=ByteUtil.toHexString(port_byte);
     }
     @Override
     public byte[] parse() {
-        return new byte[0];
+        return  ByteUtil.toByteArray(head+ip+port+end);
     }
 
     @Override
     public String getName() {
-        return null;
+        return "RecommendPacket";
     }
 }

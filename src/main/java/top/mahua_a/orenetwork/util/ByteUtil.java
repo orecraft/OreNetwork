@@ -136,8 +136,16 @@ public class ByteUtil {
         }
         return sb.toString();
     }
+    public static String bytesToip(byte[] bytes){
+        if(bytes.length!=4){
+            return "";
+        }
+        String ip="";
+        for(byte b:bytes){
+            ip=ip+(int)b+".";
+        }
+        ip=ip.substring(0,ip.length()-1);
+        return ip;
 
-
-
-
+    }
 }
