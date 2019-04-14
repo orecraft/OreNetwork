@@ -21,7 +21,7 @@ public class ShakeHandHandle implements PacketHandler{
             System.out.println("节点中已存在此包");
             return;
         }
-        OreNetwork.getNodeManager().addNode(new Node(msg.sender().getHostString(),msg.sender().getPort()));
+        OreNetwork.getNodeManager().addNode(new Node(msg.sender().getHostString(),msg.sender().getPort(),false));
         PacketHelper.sendPacket(ctx.channel(),new AcceptShakeHandPacket(),msg.sender().getHostString(),msg.sender().getPort());
         //发送同意包，并添加节点
     }

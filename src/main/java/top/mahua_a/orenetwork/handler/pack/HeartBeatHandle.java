@@ -12,7 +12,7 @@ public class HeartBeatHandle implements PacketHandler{
         Node node= OreNetwork.getNodeManager().findNode(msg.sender().getHostString(),msg.sender().getPort());
         if(node==null){
             //并非来自已知节点的包，忽略此包
-            System.out.println("来自陌生人的包");
+            System.out.println("来自陌生节点的包");
             return;
         }
         node.HeartBeat();

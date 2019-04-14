@@ -1,21 +1,28 @@
 package top.mahua_a.orenetwork.tlv;
 
+import top.mahua_a.orenetwork.node.Node;
 import top.mahua_a.orenetwork.util.ByteUtil;
 
-public class RecommendPacket implements Packet {
-    private String head="3000010003";
-    private String ip="";
-    private String port="";
-    private String end="03";
-    public RecommendPacket(String ip,int port){
-        this.ip= ByteUtil.ipToLong(ip);
-        byte[] port_byte=new byte[2];
-        port_byte=ByteUtil.toByteArray(Integer.toHexString(port));
-        this.port=ByteUtil.toHexString(port_byte);
+import java.util.ArrayList;
+import java.util.List;
+
+public class RecommendPacket implements Packet{
+    private List<Node> nodes = new ArrayList<>();
+    private String packet_0="3000010005";
+    private String packet_1="03";
+    public RecommendPacket(List<Node> nodes){
+        this.nodes=nodes;
     }
     @Override
     public byte[] parse() {
-        return  ByteUtil.toByteArray(head+ip+port+end);
+        int count = nodes.size();
+        StringBuilder sb =new StringBuilder();
+        sb.append(Integer.toHexString(count));
+        for(Node node:nodes){
+            sb.append(ByteUtil.ipToLong(node.getAddress()));
+            sb.append(ByteUtil.portTohex(node.getPort()));
+        }
+        return ByteUtil.toByteArray(packet_0+sb.toString()+packet_1);
     }
 
     @Override

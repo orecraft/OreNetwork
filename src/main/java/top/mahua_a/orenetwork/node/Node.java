@@ -4,9 +4,13 @@ public class Node {
     private String address;
     private int port;
     private Long lasttime=System.currentTimeMillis();
-    public Node(String address,int port){
+    private boolean server;
+    public Node(String address,int port,boolean isServer){
         this.address=address;
         this.port=port;
+        this.server = isServer;
+        if(isServer)
+            lasttime=0L;
     }
     public void HeartBeat(){
         lasttime=System.currentTimeMillis();
@@ -21,5 +25,9 @@ public class Node {
 
     public String getAddress() {
         return address;
+    }
+
+    public boolean isServer() {
+        return server;
     }
 }
