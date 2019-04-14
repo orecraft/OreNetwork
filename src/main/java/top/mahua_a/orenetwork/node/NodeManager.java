@@ -14,7 +14,7 @@ public class NodeManager {
     private Set<Node> nodes=new CopyOnWriteArraySet<>();
     private Channel channel;
     private Timer heartTimer = new Timer("HeartBeat");
-    private int maxNode = 64;
+    private int maxNode = 16;
 
 
     public NodeManager(Channel channel){
@@ -24,9 +24,8 @@ public class NodeManager {
             @Override
             public void run() {
                 System.out.println("当前节点数："+nodes.size());
-                Iterator<Node> it= nodes.iterator();
-                while (it.hasNext()){
-                    Node node = it.next();
+                for (Node node:nodes){
+
                     if(node.isLive()){
                         PacketHelper.sendPacket(channel,new HeartBeatPacket(),node.getAddress(),node.getPort());
                         //应该在接收到心跳包后，执行心跳包逻辑
@@ -34,7 +33,7 @@ public class NodeManager {
                     }else {
                         System.out.println("节点30s内无响应，此节点可能已经离线");
                         if(!node.isServer()) {
-                            it.remove();
+                            nodes.remove(node);
                         }else if(shouldNode()){
                             System.out.println("请求重新连接常驻节点");
                             PacketHelper.sendPacket(OreNetwork.getChannel(),new ShakeHandPacket(),node.getAddress(),node.getPort());
@@ -42,7 +41,6 @@ public class NodeManager {
                     }
                 }
                 if(shouldNode()&&!OreNetwork.isServer()){
-
                     requestNodes();
                 }
 
@@ -61,7 +59,6 @@ public class NodeManager {
             //已经存在的节点不再添加
         }
             nodes.add(node);
-        //回应对方，接受添加节点请求
     }
     public void removeNode(Node node){
         nodes.remove(node);
@@ -85,13 +82,13 @@ public class NodeManager {
             return;
 
         int requestCount=(int)Math.ceil((double) ((maxNode - nodes.size())/nodes.size()));
-        synchronized (nodes) {
-            for (Node node : nodes) {
-                if (node.isLive()) {
-                    PacketHelper.sendPacket(channel, new ReqNodePacket(requestCount), node.getAddress(), node.getPort());
-                }
+        for (Node node : nodes) {
+            if (node.isLive()&&node.couldReq()) {
+                node.reqNode();
+                PacketHelper.sendPacket(channel, new ReqNodePacket(requestCount), node.getAddress(), node.getPort());
             }
         }
+
     }
     public void shutdown(){
         heartTimer.cancel();

@@ -29,7 +29,7 @@ public class RecommendHandle implements PacketHandler{
             String addr = ByteUtil.bytesToip(ByteUtil.readBytes(addr_port,0,4));
             int port = Integer.parseInt(ByteUtil.toHexString(ByteUtil.readBytes(addr_port,4,2)),16);
             Node node = OreNetwork.getNodeManager().findNode(addr,port);
-            if(node!=null) {
+            if(node==null) {
                 PacketHelper.sendPacket(ctx.channel(), new ShakeHandPacket(), addr, port);
             }
         }

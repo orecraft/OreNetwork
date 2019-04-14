@@ -5,6 +5,7 @@ public class Node {
     private int port;
     private Long lasttime=System.currentTimeMillis();
     private boolean server;
+    private Long lastreq=0L;
     public Node(String address,int port,boolean isServer){
         this.address=address;
         this.port=port;
@@ -29,5 +30,13 @@ public class Node {
 
     public boolean isServer() {
         return server;
+    }
+    public void reqNode(){
+        this.lastreq=System.currentTimeMillis();
+    }
+    public boolean couldReq(){
+        if(server)
+            return true;
+        return  System.currentTimeMillis()-lastreq>=30000;
     }
 }
