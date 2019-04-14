@@ -11,14 +11,12 @@ public class ShakeHandHandle implements PacketHandler{
 
     @Override
     public void handler(ChannelHandlerContext ctx, DatagramPacket msg) {
-        System.out.println("握手包");
         if(!OreNetwork.getNodeManager().shouldNode())
             return;
         //如果节点数已满，则不需要新节点，忽略此包
         Node node= OreNetwork.getNodeManager().findNode(msg.sender().getHostString(),msg.sender().getPort());
         if(node!=null){
             //已有的节点无需握手，忽略此包
-            System.out.println("节点中已存在此包");
             return;
         }
         OreNetwork.getNodeManager().addNode(new Node(msg.sender().getHostString(),msg.sender().getPort(),false));

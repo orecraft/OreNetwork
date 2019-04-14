@@ -3,11 +3,10 @@ package top.mahua_a.orenetwork.tlv;
 import top.mahua_a.orenetwork.node.Node;
 import top.mahua_a.orenetwork.util.ByteUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RecommendPacket implements Packet{
-    private List<Node> nodes = new ArrayList<>();
+    private List<Node> nodes ;
     private String packet_0="3000010005";
     private String packet_1="03";
     public RecommendPacket(List<Node> nodes){
@@ -17,11 +16,13 @@ public class RecommendPacket implements Packet{
     public byte[] parse() {
         int count = nodes.size();
         StringBuilder sb =new StringBuilder();
-        sb.append(Integer.toHexString(count));
+        sb.append(ByteUtil.countTohex(count));
+
         for(Node node:nodes){
             sb.append(ByteUtil.ipToLong(node.getAddress()));
             sb.append(ByteUtil.portTohex(node.getPort()));
         }
+
         return ByteUtil.toByteArray(packet_0+sb.toString()+packet_1);
     }
 

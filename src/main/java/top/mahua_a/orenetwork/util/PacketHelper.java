@@ -9,9 +9,11 @@ import java.net.InetSocketAddress;
 
 public class PacketHelper {
     public static void sendPacket(Channel channel, Packet packet, String addr, int port){
+
         channel.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(packet.parse()),new InetSocketAddress(addr,port)));
     }
     public static void sendPacket(Channel channel, Packet packet, InetSocketAddress sender){
+
         channel.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(packet.parse()),sender));
     }
 }

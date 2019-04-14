@@ -17,7 +17,7 @@ public class ReqNodePacket implements Packet{
     }
     @Override
     public byte[] parse() {
-        return ByteUtil.toByteArray(packet_0+Integer.toHexString(count)+packet_1);
+        return ByteUtil.toByteArray(packet_0+ByteUtil.countTohex(count)+packet_1);
     }
 
     @Override

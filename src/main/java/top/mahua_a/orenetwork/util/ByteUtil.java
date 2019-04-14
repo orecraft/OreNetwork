@@ -132,7 +132,7 @@ public class ByteUtil {
         String[] ip=ipString.split("\\.");
         StringBuffer sb=new StringBuffer();
         for (String str : ip) {
-            sb.append(Integer.toHexString(Integer.parseInt(str)));
+            sb.append(String.format("%2s",Integer.toHexString(Integer.parseInt(str))).replace(" ","0"));
         }
         return sb.toString();
     }
@@ -166,7 +166,10 @@ public class ByteUtil {
         return (int)(b & 0xff);
     }
     public static String portTohex(int port){
-        return String.format("%3d",Integer.toHexString(port)).replace(" ","0");
+        return String.format("%4s",Integer.toHexString(port)).replace(" ","0");
+    }
+    public static String countTohex(int count){
+        return String.format("%2s",Integer.toHexString(count)).replace(" ","0");
     }
 
 }

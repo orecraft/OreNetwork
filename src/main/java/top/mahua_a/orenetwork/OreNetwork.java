@@ -18,10 +18,12 @@ public class OreNetwork {
     private static Channel channel;
     private static NodeManager nodeManager;
     private static ClientHandler clientHandler;
+    private static boolean server = false;
 
     private static List<Node> seeds = new ArrayList<>();
     public static void start(boolean server){
         int port= 0;
+        OreNetwork.server=server;
         if(server)
             port = 1008;
         EventLoopGroup group = new NioEventLoopGroup();
@@ -33,6 +35,7 @@ public class OreNetwork {
         clientHandler.regHandler("3306",new HolePunchingHandle());
         clientHandler.regHandler("3307",new HolePunchingCmdHandle());
         clientHandler.regHandler("0004",new ReqNodeHandle());
+        clientHandler.regHandler("0005",new RecommendHandle());
         try {
             bootstrap = new Bootstrap();
             bootstrap.group(group)
@@ -75,5 +78,8 @@ public class OreNetwork {
     }
     public static void addSeedNode(Node node){
         seeds.add(node);
+    }
+    public static boolean isServer(){
+        return OreNetwork.server;
     }
 }

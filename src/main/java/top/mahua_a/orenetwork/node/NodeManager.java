@@ -1,21 +1,17 @@
 package top.mahua_a.orenetwork.node;
 
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
-import io.netty.channel.socket.DatagramPacket;
 import top.mahua_a.orenetwork.OreNetwork;
-import top.mahua_a.orenetwork.tlv.AcceptShakeHandPacket;
 import top.mahua_a.orenetwork.tlv.HeartBeatPacket;
 import top.mahua_a.orenetwork.tlv.ReqNodePacket;
 import top.mahua_a.orenetwork.tlv.ShakeHandPacket;
-import top.mahua_a.orenetwork.util.ByteUtil;
 import top.mahua_a.orenetwork.util.PacketHelper;
 
-import java.net.InetSocketAddress;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class NodeManager {
-    private Set<Node> nodes=new HashSet<>();
+    private Set<Node> nodes=new CopyOnWriteArraySet<>();
     private Channel channel;
     private Timer heartTimer = new Timer("HeartBeat");
     private int maxNode = 64;
@@ -45,7 +41,8 @@ public class NodeManager {
                         }
                     }
                 }
-                if(shouldNode()){
+                if(shouldNode()&&!OreNetwork.isServer()){
+
                     requestNodes();
                 }
 
@@ -53,10 +50,10 @@ public class NodeManager {
         },0,10000);
 
     }
-    public synchronized void setMaxNode(int maxNode){
+    public void setMaxNode(int maxNode){
         this.maxNode=maxNode;
     }
-    public synchronized void addNode(Node node){
+    public void addNode(Node node){
         if(nodes.size()>=maxNode)  //不能超过最大节点数
             return;
         if(findNode(node.getAddress(),node.getPort())!=null) {
@@ -66,7 +63,7 @@ public class NodeManager {
             nodes.add(node);
         //回应对方，接受添加节点请求
     }
-    public synchronized void removeNode(Node node){
+    public void removeNode(Node node){
         nodes.remove(node);
     }
     public Node findNode(String addr,int port){
@@ -84,18 +81,35 @@ public class NodeManager {
         return nodes.size()<maxNode;
     }
     private void requestNodes(){
-        Iterator<Node> it = nodes.iterator();
+        if(nodes.size()==0)
+            return;
+
         int requestCount=(int)Math.ceil((double) ((maxNode - nodes.size())/nodes.size()));
-        while (it.hasNext()) {
-            Node node = it.next();
-            if(node.isLive()){
-                PacketHelper.sendPacket(channel,new ReqNodePacket(requestCount),node.getAddress(),node.getPort());
+        synchronized (nodes) {
+            for (Node node : nodes) {
+                if (node.isLive()) {
+                    PacketHelper.sendPacket(channel, new ReqNodePacket(requestCount), node.getAddress(), node.getPort());
+                }
             }
         }
     }
     public void shutdown(){
         heartTimer.cancel();
         nodes=null;
+    }
+    //获取可引荐的节点
+    public ArrayList<Node> RecommendNode(String ip,int port){
+        Iterator<Node> it = nodes.iterator();
+        ArrayList<Node> r_nodes = new ArrayList<>();
+        while (it.hasNext()){
+            Node node = it.next();
+            if(!node.isServer()&&node.isLive()){
+                if((!node.getAddress().equalsIgnoreCase(ip))||node.getPort()!=port) {
+                    r_nodes.add(node);
+                }
+            }
+        }
+        return r_nodes;
     }
 
 }

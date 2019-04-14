@@ -27,7 +27,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<DatagramPacket> {
                 bytes[0]!=(byte) Integer.parseInt("30",16)||
                 bytes[bytes.length-1]!=(byte) Integer.parseInt("03",16)
         ){
-            System.out.println("无效的数据");
+            System.out.println("无效的数据:"+ByteUtil.toHexString(bytes));
             //PacketHelper.sendPacket(ctx.channel(),new InvalidPacket(),msg.sender());
             return;
         }
