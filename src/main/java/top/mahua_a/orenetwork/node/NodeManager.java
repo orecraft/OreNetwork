@@ -10,6 +10,7 @@ package top.mahua_a.orenetwork.node;
 import io.netty.channel.Channel;
 import top.mahua_a.orenetwork.OreNetwork;
 import top.mahua_a.orenetwork.tlv.HeartBeatPacket;
+import top.mahua_a.orenetwork.tlv.PingPacket;
 import top.mahua_a.orenetwork.tlv.ReqNodePacket;
 import top.mahua_a.orenetwork.tlv.ShakeHandPacket;
 import top.mahua_a.orenetwork.util.PacketHelper;
@@ -22,6 +23,8 @@ public class NodeManager {
     private Channel channel;
     private Timer heartTimer = new Timer("HeartBeat");
     private int maxNode = 16;
+    private int minNode = 4;
+    private boolean busyMode = false;
 
 
     public NodeManager(Channel channel){
@@ -35,6 +38,8 @@ public class NodeManager {
 
                     if(node.isLive()){
                         PacketHelper.sendPacket(channel,new HeartBeatPacket(),node.getAddress(),node.getPort());
+                        //每次心跳后，发送一个ping
+                        PacketHelper.sendPacket(channel,new PingPacket(),node.getAddress(),node.getPort());
                         //应该在接收到心跳包后，执行心跳包逻辑
                         //node.HeartBeat();
                     }else {
@@ -48,7 +53,7 @@ public class NodeManager {
                     }
                 }
                 if(shouldNode()&&!OreNetwork.isServer()){
-                    requestNodes();
+                    requestNodes(busyMode);
                 }
 
             }
@@ -82,17 +87,32 @@ public class NodeManager {
         return null;
     }
     public boolean shouldNode(){
-        return nodes.size()<maxNode;
+        if(busyMode||OreNetwork.isServer()){
+            return nodes.size()<maxNode;
+        }
+
+        return nodes.size()<minNode;
     }
-    private void requestNodes(){
+    private void requestNodes(boolean max){
         if(nodes.size()==0)
             return;
-
-        int requestCount=(int)Math.ceil((double) ((maxNode - nodes.size())/nodes.size()));
+        int requestCount;
+        int needNode = 0;
+        if(max) {
+            needNode = maxNode - nodes.size();
+            requestCount = (int) Math.ceil((double) ((maxNode - nodes.size()) / nodes.size()));
+        }else{
+            if(minNode<=nodes.size())
+                return;
+            needNode = minNode - nodes.size();
+            requestCount = (int) Math.ceil((double) ((minNode - nodes.size()) / nodes.size()));
+        }
         for (Node node : nodes) {
-            if (node.isLive()&&node.couldReq()) {
+            if (node.isLive()&&node.couldReq()&&needNode>0) {
                 node.reqNode();
                 PacketHelper.sendPacket(channel, new ReqNodePacket(requestCount), node.getAddress(), node.getPort());
+                System.out.println("请求节点("+needNode+")");
+                needNode=needNode-requestCount;
             }
         }
 
@@ -107,13 +127,23 @@ public class NodeManager {
         ArrayList<Node> r_nodes = new ArrayList<>();
         while (it.hasNext()){
             Node node = it.next();
-            if(!node.isServer()&&node.isLive()){
+            System.out.println(node.getOnline()+"/"+node.getMax());
+            if(!node.isServer()&&node.isLive()&&(node.getOnline()<node.getMax())){
                 if((!node.getAddress().equalsIgnoreCase(ip))||node.getPort()!=port) {
                     r_nodes.add(node);
                 }
             }
         }
         return r_nodes;
+    }
+    public void setBusyMode(boolean status){
+        this.busyMode = status;
+    }
+    public int getMaxNode(){
+        return busyMode?this.maxNode:this.minNode;
+    }
+    public int getOnlineNode(){
+        return nodes.size();
     }
 
 }

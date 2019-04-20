@@ -15,6 +15,8 @@ public class Node {
     private Long lasttime=System.currentTimeMillis();
     private boolean server;
     private Long lastreq=0L;
+    private int max;
+    private int Online;
     public Node(String address,int port,boolean isServer){
         this.address=address;
         this.port=port;
@@ -46,6 +48,22 @@ public class Node {
     public boolean couldReq(){
         if(server)
             return true;
-        return  System.currentTimeMillis()-lastreq>=30000;
+        return  System.currentTimeMillis()-lastreq>=5000;
+    }
+
+    public int getMax() {
+        return max;
+    }
+
+    public int getOnline() {
+        return Online;
+    }
+
+    public void setMax(int max) {
+        this.max = max;
+    }
+
+    public void setOnline(int online) {
+        Online = online;
     }
 }

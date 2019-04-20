@@ -19,9 +19,12 @@ public class OreNetwork {
     private static NodeManager nodeManager;
     private static ClientHandler clientHandler;
     private static boolean server = false;
+    private static boolean running = false;
 
     private static List<Node> seeds = new ArrayList<>();
     public static void start(boolean server){
+        if(running)
+            return;
         int port= 0;
         OreNetwork.server=server;
         if(server)
@@ -36,6 +39,8 @@ public class OreNetwork {
         clientHandler.regHandler("3307",new HolePunchingCmdHandle());
         clientHandler.regHandler("0004",new ReqNodeHandle());
         clientHandler.regHandler("0005",new RecommendHandle());
+        clientHandler.regHandler("2201",new PingHandle());
+        clientHandler.regHandler("2202",new PongHandle());
         try {
             bootstrap = new Bootstrap();
             bootstrap.group(group)
@@ -62,11 +67,8 @@ public class OreNetwork {
         channel.close();
         nodeManager=null;
         channel=null;
+        running=false;
         System.out.println("Bye Bye!");
-    }
-
-    public static Bootstrap getBootstrap() {
-        return bootstrap;
     }
 
     public static Channel getChannel() {
@@ -81,5 +83,8 @@ public class OreNetwork {
     }
     public static boolean isServer(){
         return OreNetwork.server;
+    }
+    public static boolean isRunning(){
+        return OreNetwork.running;
     }
 }
