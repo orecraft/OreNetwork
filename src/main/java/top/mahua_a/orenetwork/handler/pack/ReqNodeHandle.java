@@ -1,3 +1,11 @@
+/*
+ * Created on 2019/4/20
+ * Author: MaHua_A
+ * Copyright 2019 by OreCraft Studio
+ * DO NOT MODIFY THESE WORDS
+ */
+
+
 package top.mahua_a.orenetwork.handler.pack;
 
 import io.netty.buffer.ByteBuf;
@@ -6,9 +14,7 @@ import io.netty.channel.socket.DatagramPacket;
 import top.mahua_a.orenetwork.OreNetwork;
 import top.mahua_a.orenetwork.node.Node;
 import top.mahua_a.orenetwork.tlv.InvalidPacket;
-import top.mahua_a.orenetwork.tlv.Packet;
 import top.mahua_a.orenetwork.tlv.RecommendPacket;
-import top.mahua_a.orenetwork.tlv.ReqNodePacket;
 import top.mahua_a.orenetwork.util.ByteUtil;
 import top.mahua_a.orenetwork.util.PacketHelper;
 
