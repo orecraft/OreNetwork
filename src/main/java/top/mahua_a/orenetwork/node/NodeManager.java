@@ -107,9 +107,13 @@ public class NodeManager {
             needNode = minNode - nodes.size();
             requestCount = (int) Math.ceil((double) ((minNode - nodes.size()) / nodes.size()));
         }
+        if(requestCount==0){
+            return;
+        }
         for (Node node : nodes) {
             if (node.isLive()&&node.couldReq()&&needNode>0) {
                 node.reqNode();
+
                 PacketHelper.sendPacket(channel, new ReqNodePacket(requestCount), node.getAddress(), node.getPort());
                 System.out.println("请求节点("+needNode+")");
                 needNode=needNode-requestCount;
