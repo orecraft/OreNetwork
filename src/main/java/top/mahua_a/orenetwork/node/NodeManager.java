@@ -22,8 +22,8 @@ public class NodeManager {
     private Set<Node> nodes=new CopyOnWriteArraySet<>();
     private Channel channel;
     private Timer heartTimer = new Timer("HeartBeat");
-    private int maxNode = 16;
-    private int minNode = 4;
+    private int maxNode = 64;
+    private int minNode = 16;
     private boolean busyMode = false;
 
 
