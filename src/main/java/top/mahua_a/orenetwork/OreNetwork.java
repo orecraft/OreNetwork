@@ -37,10 +37,7 @@ public class OreNetwork {
         clientHandler.regHandler("0201",new AcceptShakeHandHandle());
         clientHandler.regHandler("3306",new HolePunchingHandle());
         clientHandler.regHandler("3307",new HolePunchingCmdHandle());
-        clientHandler.regHandler("0004",new ReqNodeHandle());
-        clientHandler.regHandler("0005",new RecommendHandle());
-        clientHandler.regHandler("2201",new PingHandle());
-        clientHandler.regHandler("2202",new PongHandle());
+
         try {
             bootstrap = new Bootstrap();
             bootstrap.group(group)
